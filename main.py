@@ -243,13 +243,16 @@ def main_worker(gpu, ngpus_per_node, args):
         adjust_learning_rate(optimizer, epoch, args)
 
         # train for one epoch
+        s = time.time()
         train(train_loader, model, criterion, optimizer, epoch, args)
+        per_epoch_time = time.time() - s
 
     # evaluate on validation set
     acc1 = validate(val_loader, model, criterion, args)
 
     pd.Series({
-        'test_acc':acc1
+        'test_acc':acc1.cpu().item(),
+        'per_epoch_time':per_epoch_time
     }).to_csv(args.ffcv_out_path)
 
 
